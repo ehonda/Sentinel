@@ -1,5 +1,5 @@
-# This workflow runs on a schedule and makes an http call to the specified URLs. It then checks the returned content for
-# certain regular expressions and fails the workflow if they are not found.
+# This workflow runs on a schedule and makes an http call to the specified URLs. It then heuristically checks the
+# returned content for interesting changes and fails the workflow if they are detected.
 #
 #     https://wiki.dominionstrategy.com/index.php/Sentinel
 name: Sentinel
@@ -13,6 +13,16 @@ on:
   workflow_dispatch:
 
 jobs:
+  # This job works as follows:
+  #   1. Make an http call to the specified URL and store the response in a file
+  #   2. Check the response for interesting changes
+  #       - Check if a course's availability has changed
+  #       - Check if a course's date has changed
+  #       - Check if new courses have been added
+  #       - Check if existing courses have been removed
+  #
+  # The interesting part of the response that we examine looks like this:
+  #   <div class=.product-schedules-date>Montag, 06.Januar 16:15 Uhr</div></div><div style="margin:0 auto">(ausgebucht)</div><div class="d-flex f-column align-items-center"><div class=product-price>&#x20AC;0.00 <span class=required>**</span></div></div></div><li class=productNonavaiable><input id=scheduledProduct-12487 type=radio name=InnerProductId value=12487 disabled data-price=0><div for=scheduledProduct-12487 class=product-info-container><div class="d-flex flex-column"><div>Kleinkindschwimmen Schwimmhalle Mitte</div><div class=.product-schedules-date>Montag, 06.Januar 16:45 Uhr</div></div><div style="margin:0 auto">(ausgebucht)</div>
   sentinel:
     runs-on: ubuntu-latest
     steps:
@@ -20,10 +30,26 @@ jobs:
         run: curl --silent --show-error --location https://baedershop.l.de/de/kleinkinderschwimmen > /tmp/response
       - name: Debug output
         run: cat /tmp/response
-      - name: Check availability A
+      # A and B should fail if the availability or date of a course changes
+      - name: Check availability and date of course A
         run: grep --quiet --perl-regexp 'Montag, 06\.Januar 16:15 Uhr.*?\(ausgebucht\)' /tmp/response
-      - name: Check availability B
+      - name: Check availability and date of course B
         run: grep --quiet --perl-regexp 'Montag, 06\.Januar 16:45 Uhr.*?\(ausgebucht\)' /tmp/response
+      # C should fail if additional courses are added (or the existing ones are removed)
+      - name: Check number of courses
+        run: |
+          NUMBER_OF_COURSES=$(grep --only-matching '\.product-schedules-date' /tmp/response | wc --lines)
+          if [ "$NUMBER_OF_COURSES" -ne 2 ]; then
+            echo "Number of courses has changed, expected 2, got $NUMBER_OF_COURSES"
+            exit 1
+          fi
       # Only to test the failure, normally commented out
-      #- name: Test failure
+      #- name: Test failure of availability and date check
       #  run: grep --quiet --perl-regexp 'THIS IS NOT CONTAINED IN THE RESPONSE auqiehtaipehpaihwerahiaww' /tmp/response
+      - name: Test failure of number of courses check
+        run: |
+          NUMBER_OF_COURSES=$(grep --only-matching '\.product-schedules-date' /tmp/response | wc --lines)
+          if [ "$NUMBER_OF_COURSES" -ne 1 ]; then
+            echo "Number of courses has changed, expected 2, got $NUMBER_OF_COURSES"
+            exit 1
+          fi

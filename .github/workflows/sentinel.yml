@@ -42,14 +42,6 @@ jobs:
           if [ "$NUMBER_OF_COURSES" -ne 2 ]; then
             echo "Number of courses has changed, expected 2, got $NUMBER_OF_COURSES"
             exit 1
-          fi
-      # Only to test the failure, normally commented out
-      #- name: Test failure of availability and date check
-      #  run: grep --quiet --perl-regexp 'THIS IS NOT CONTAINED IN THE RESPONSE auqiehtaipehpaihwerahiaww' /tmp/response
-      - name: Test failure of number of courses check
-        run: |
-          NUMBER_OF_COURSES=$(grep --only-matching '\.product-schedules-date' /tmp/response | wc --lines)
-          if [ "$NUMBER_OF_COURSES" -ne 1 ]; then
-            echo "Number of courses has changed, expected 2, got $NUMBER_OF_COURSES"
-            exit 1
+          else
+            echo "Number of courses is 2 as expected"
           fi

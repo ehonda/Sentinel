@@ -1,0 +1,20 @@
+# This workflow runs on a schedule and makes an http call to the specified URLs. It then checks the returned content for
+# certain keywords and fails the workflow if they are not found.
+#
+#     https://wiki.dominionstrategy.com/index.php/Sentinel
+name: Sentinel
+
+on:
+  schedule:
+    # https://crontab.guru/#1_*/1_*_*_*
+    #   “At minute 1 past every hour.” 
+    - cron: '1 */1 * * *'
+
+jobs:
+  sentinel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make calle
+        run: curl https://baedershop.l.de/de/kleinkinderschwimmen > /tmp/response
+      - name: Debug
+        run: cat /tmp/response

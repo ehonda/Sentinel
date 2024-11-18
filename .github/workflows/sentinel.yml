@@ -20,9 +20,9 @@ jobs:
   #       - Check if a course's date has changed
   #       - Check if new courses have been added
   #       - Check if existing courses have been removed
+  #   3. Fail the workflow if any of the checks fail
   #
-  # The interesting part of the response that we examine looks like this:
-  #   <div class=.product-schedules-date>Montag, 06.Januar 16:15 Uhr</div></div><div style="margin:0 auto">(ausgebucht)</div><div class="d-flex f-column align-items-center"><div class=product-price>&#x20AC;0.00 <span class=required>**</span></div></div></div><li class=productNonavaiable><input id=scheduledProduct-12487 type=radio name=InnerProductId value=12487 disabled data-price=0><div for=scheduledProduct-12487 class=product-info-container><div class="d-flex flex-column"><div>Kleinkindschwimmen Schwimmhalle Mitte</div><div class=.product-schedules-date>Montag, 06.Januar 16:45 Uhr</div></div><div style="margin:0 auto">(ausgebucht)</div>
+  # The part of the response we're inspecting can be inspected under `response_excerpt.md` in the project root.
   sentinel:
     runs-on: ubuntu-latest
     steps:

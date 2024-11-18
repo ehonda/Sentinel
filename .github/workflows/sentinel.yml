@@ -1,5 +1,5 @@
 # This workflow runs on a schedule and makes an http call to the specified URLs. It then checks the returned content for
-# certain keywords and fails the workflow if they are not found.
+# certain regular expressions and fails the workflow if they are not found.
 #
 #     https://wiki.dominionstrategy.com/index.php/Sentinel
 name: Sentinel
@@ -14,7 +14,12 @@ jobs:
   sentinel:
     runs-on: ubuntu-latest
     steps:
-      - name: Make calle
-        run: curl https://baedershop.l.de/de/kleinkinderschwimmen > /tmp/response
-      - name: Debug
-        run: cat /tmp/response
+      - name: Make call
+        run: curl --silent --show-error --location https://baedershop.l.de/de/kleinkinderschwimmen > /tmp/response
+      - name: Check availability
+        run: |
+          grep --perl-regexp 'Montag, 06\.Januar 16:15 Uhr.*?\(ausgebucht\)' /tmp/response
+          grep --perl-regexp 'Montag, 06\.Januar 16:45 Uhr.*?\(ausgebucht\)' /tmp/response
+      # Only to test the failure, normally commented out
+      - name: Test failure
+        run: grep --perl-regexp 'THIS IS NOT CONTAINED IN THE RESPONSE auqiehtaipehpaihwerahiaww' /tmp/response

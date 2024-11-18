@@ -25,5 +25,5 @@ jobs:
       - name: Check availability B
         run: grep --quiet --perl-regexp 'Montag, 06\.Januar 16:45 Uhr.*?\(ausgebucht\)' /tmp/response
       # Only to test the failure, normally commented out
-      - name: Test failure
-        run: grep --quiet --perl-regexp 'THIS IS NOT CONTAINED IN THE RESPONSE auqiehtaipehpaihwerahiaww' /tmp/response
+      #- name: Test failure
+      #  run: grep --quiet --perl-regexp 'THIS IS NOT CONTAINED IN THE RESPONSE auqiehtaipehpaihwerahiaww' /tmp/response

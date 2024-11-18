@@ -18,10 +18,12 @@ jobs:
     steps:
       - name: Make call
         run: curl --silent --show-error --location https://baedershop.l.de/de/kleinkinderschwimmen > /tmp/response
-      - name: Check availability
-        run: |
-          grep --perl-regexp 'Montag, 06\.Januar 16:15 Uhr.*?\(ausgebucht\)' /tmp/response
-          grep --perl-regexp 'Montag, 06\.Januar 16:45 Uhr.*?\(ausgebucht\)' /tmp/response
+      - name: Debug output
+        run: cat /tmp/response
+      - name: Check availability A
+        run: grep --quiet --perl-regexp 'Montag, 06\.Januar 16:15 Uhr.*?\(ausgebucht\)' /tmp/response
+      - name: Check availability B
+        run: grep --quiet --perl-regexp 'Montag, 06\.Januar 16:45 Uhr.*?\(ausgebucht\)' /tmp/response
       # Only to test the failure, normally commented out
       - name: Test failure
-        run: grep --perl-regexp 'THIS IS NOT CONTAINED IN THE RESPONSE auqiehtaipehpaihwerahiaww' /tmp/response
+        run: grep --quiet --perl-regexp 'THIS IS NOT CONTAINED IN THE RESPONSE auqiehtaipehpaihwerahiaww' /tmp/response

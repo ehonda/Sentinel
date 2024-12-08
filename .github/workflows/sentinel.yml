@@ -27,13 +27,19 @@ jobs:
         run: curl --silent --show-error --location https://baedershop.l.de/de/kleinkinderschwimmen > /tmp/response
       - name: Debug output
         run: cat /tmp/response
-      # C should fail if additional courses are added (or the existing ones are removed)
+      # This should fail if a 'schedulesproducts' class is added (which it was in v1 with the unavailable courses)
+      - name: Check for new courses
+        run: |
+          NUMBER_OF_SCHEDULED_PRODUCTS=$(grep --only-matching 'class=scheduledproducts' /tmp/response | wc --lines)
+          if [ "$NUMBER_OF_SCHEDULED_PRODUCTS" -ne 0 ]; then
+            echo "Number of scheduled products has changed, expected 0, got $NUMBER_OF_SCHEDULED_PRODUCTS"
+            exit 1
+          fi
+      # This should should fail if additional courses are added (or the existing ones are removed)
       - name: Check number of courses
         run: |
           NUMBER_OF_COURSES=$(grep --only-matching '\.product-schedules-date' /tmp/response | wc --lines)
           if [ "$NUMBER_OF_COURSES" -ne 0 ]; then
             echo "Number of courses has changed, expected 0, got $NUMBER_OF_COURSES"
             exit 1
-          else
-            echo "Number of courses is 0 as expected"
           fi

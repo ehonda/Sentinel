@@ -5,10 +5,11 @@
 name: Sentinel
 
 on:
-  schedule:
-    # https://crontab.guru/#0_*/1_*_*_*
-    #   “At minute 0 past every hour.” 
-    - cron: '0 */1 * * *'
+  # Disabled until needed again
+  # schedule:
+  #   # https://crontab.guru/#0_*/1_*_*_*
+  #   #   “At minute 0 past every hour.” 
+  #   - cron: '0 */1 * * *'
   # Manually trigger the workflow for testing
   workflow_dispatch:
 
